@@ -8,6 +8,7 @@ const { salt } = require('../config/config')
 const UsersSchema = new Schema({
   username: String,
   hash: String,
+  token: String,
 });
 
 UsersSchema.methods.setPassword = function(password) {
@@ -23,7 +24,6 @@ UsersSchema.methods.generateJWT = function() {
   const today = new Date();
   const expirationDate = new Date(today);
   expirationDate.setDate(today.getDate() + 60);
-
   return jwt.sign({
     username: this.username,
     id: this._id,
