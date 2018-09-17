@@ -5,22 +5,25 @@ const jwt = require('jsonwebtoken');
 const { Schema } = mongoose;
 const { salt } = require('../config/config')
 
-const UsersSchema = new Schema({
+const UserSchema = new Schema({
   username: String,
   hash: String,
   token: String,
 });
 
-UsersSchema.methods.setPassword = function(password) {
+UserSchema.methods.setName = function(username) {
+  this.username = username;
+};
+UserSchema.methods.setPassword = function(password) {
   this.hash = crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha512').toString('hex');
 };
 
-UsersSchema.methods.validatePassword = function(password) {
+UserSchema.methods.validatePassword = function(password) {
   const hash = crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha512').toString('hex');
   return this.hash === hash;
 };
 
-UsersSchema.methods.generateJWT = function() {
+UserSchema.methods.generateJWT = function() {
   const today = new Date();
   const expirationDate = new Date(today);
   expirationDate.setDate(today.getDate() + 60);
@@ -31,7 +34,7 @@ UsersSchema.methods.generateJWT = function() {
   }, 'secret');
 }
 
-UsersSchema.methods.toAuthJSON = function() {
+UserSchema.methods.toAuthJSON = function() {
   return {
     _id: this._id,
     username: this.username,
@@ -39,5 +42,5 @@ UsersSchema.methods.toAuthJSON = function() {
   };
 };
 
-mongoose.model('Users', UsersSchema);
-module.exports = mongoose.model('Users', UsersSchema);
+// mongoose.model('xyz', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

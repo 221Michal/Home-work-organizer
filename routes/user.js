@@ -1,14 +1,13 @@
 const mongoose = require('mongoose');
 const passport = require('passport');
 const router = require('express').Router();
-const auth = require('../auth');
-const Users = mongoose.model('Users');
+const auth = require('./auth');
+const User = mongoose.model('User');
 
 //POST new user route (optional, everyone has access)
-router.post('/', auth.optional, (req, res, next) => {
-  const { body: { user } } = req;
-
-  if(!user.email) {
+router.post('/register', auth.optional, (req, res, next) => {
+  const { body: { username, password } } = req;
+  if (!username) {
     return res.status(422).json({
       errors: {
         email: 'is required',
@@ -16,7 +15,7 @@ router.post('/', auth.optional, (req, res, next) => {
     });
   }
 
-  if(!user.password) {
+  if (!password) {
     return res.status(422).json({
       errors: {
         password: 'is required',
@@ -24,9 +23,9 @@ router.post('/', auth.optional, (req, res, next) => {
     });
   }
 
-  const finalUser = new Users(user);
-
-  finalUser.setPassword(user.password);
+  const finalUser = new User();
+  finalUser.setName(username);
+  finalUser.setPassword(password);
 
   return finalUser.save()
     .then(() => res.json({ user: finalUser.toAuthJSON() }));
@@ -34,17 +33,17 @@ router.post('/', auth.optional, (req, res, next) => {
 
 //POST login route (optional, everyone has access)
 router.post('/login', auth.optional, (req, res, next) => {
-  const { body: { user } } = req;
+  const { body: { username, password } } = req;
 
-  if(!user.email) {
+  if (!username) {
     return res.status(422).json({
       errors: {
-        email: 'is required',
+        username: 'is required',
       },
     });
   }
 
-  if(!user.password) {
+  if (!password) {
     return res.status(422).json({
       errors: {
         password: 'is required',
@@ -52,16 +51,16 @@ router.post('/login', auth.optional, (req, res, next) => {
     });
   }
 
-  return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
-    if(err) {
+  return passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err) {
       return next(err);
     }
 
-    if(passportUser) {
-      const user = passportUser;
-      user.token = passportUser.generateJWT();
-
+    if (user) {
+      user.token = user.generateJWT();
+      user.save();
       return res.json({ user: user.toAuthJSON() });
+
     }
 
     return status(400).info;
@@ -72,9 +71,9 @@ router.post('/login', auth.optional, (req, res, next) => {
 router.get('/current', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
 
-  return Users.findById(id)
+  return User.findById(id)
     .then((user) => {
-      if(!user) {
+      if (!user) {
         return res.sendStatus(400);
       }
 

@@ -26,12 +26,12 @@ app.use(bodyParser.json());app.use(require('express-session')({
 
 
 //Configure Mongoose
-mongoose.connect('mongodb://localhost/reactdb');
+mongoose.connect('mongodb://localhost/mern');
 mongoose.set('debug', true);
 
 //Models &routes
-var Users = require('./models/Users');
-app.use(require('./routes'));
+var User = require('./models/User');
+app.use('/user', require('./routes/user'));
 
 //passport
 var passport = require('passport')
@@ -40,7 +40,7 @@ var passport = require('passport')
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-    Users.findOne({ username: username }, function (err, user) {
+    User.findOne({ username: username }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
@@ -49,9 +49,13 @@ passport.use(new LocalStrategy(
         return done(null, false, { message: 'Incorrect password.' });
       }
       const token = user.generateJWT()
-      console.log(token)
-      Users.updateOne({username: username}, {$set: {token: token}})
-      return done(null, {user, token: token});
+      user.token = token
+      user.save((err) => {
+        if (err) done(err, user);
+
+        return done(null, user);
+      })
+      return done(null, user );
     });
   }
 ));
@@ -61,30 +65,24 @@ passport.use(new LocalStrategy(
 
 //crud
 
-app.post('/login',
-  passport.authenticate('local', {
-    session: false
-  }),
-  function(req, res) {
-    console.log(req.user.token)
-    res.setHeader('Content-Type', 'application/json')
-    res.send(JSON.stringify({ token: req.user.token}));
-  });
 
-app.get('/login', (req, res) => {
-  Users.findOne({ username: "MC" }, function (err, user) {
-    console.log(user)
-  })
-  // var User = new Users();
-  // User.username = "MC"
-  // User.hash = crypto.pbkdf2Sync('asd', "adasdjajdahcz13213jdsa", 10000, 512, 'sha512').toString('hex')
-  // User.token = ''
-  // User.save()
-  // console.log(User, "asd")
-  res.sendFile(__dirname + '/index.html')
-})
-app.get('/', (req, res) => {
-  res.send('Hello World')
-})
+// app.post('/login',
+//   passport.authenticate('local', {
+//     session: false
+//   }),
+//   function(req, res) {
+//     console.log(res.user)
+//     res.setHeader('Content-Type', 'application/json')
+//     res.send(JSON.stringify({ token: req.user.token}));
+//   });
+
+// app.get('/login', (req, res) => {
+//   User.findOne({ username: "MD" }, function (err, user) {
+//   })
+//   res.sendFile(__dirname + '/index.html')
+// })
+// app.get('/', (req, res) => {
+//   res.send('Hello World')
+// })
 
 app.listen(1111, () => console.log('Server running on http://localhost:1111/'));
