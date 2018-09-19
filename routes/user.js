@@ -6,8 +6,8 @@ const User = mongoose.model('User');
 
 //POST new user route (optional, everyone has access)
 router.post('/register', auth.optional, (req, res, next) => {
-  const { body: { username, password } } = req;
-  if (!username) {
+  const { body: { username, password, email } } = req;
+  if(!username) {
     return res.status(422).json({
       errors: {
         email: 'is required',
@@ -15,7 +15,7 @@ router.post('/register', auth.optional, (req, res, next) => {
     });
   }
 
-  if (!password) {
+  if(!password) {
     return res.status(422).json({
       errors: {
         password: 'is required',
@@ -25,6 +25,8 @@ router.post('/register', auth.optional, (req, res, next) => {
 
   const finalUser = new User();
   finalUser.setName(username);
+  finalUser.setUserId();
+  finalUser.setEmail(email);
   finalUser.setPassword(password);
 
   return finalUser.save()
@@ -33,37 +35,14 @@ router.post('/register', auth.optional, (req, res, next) => {
 
 //POST login route (optional, everyone has access)
 router.post('/login', auth.optional, (req, res, next) => {
-  const { body: { username, password } } = req;
-
-  if (!username) {
-    return res.status(422).json({
-      errors: {
-        username: 'is required',
-      },
+  console.log(req.body)
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.status(401).json(info); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.json({ token: req.user.token});
     });
-  }
-
-  if (!password) {
-    return res.status(422).json({
-      errors: {
-        password: 'is required',
-      },
-    });
-  }
-
-  return passport.authenticate('local', { session: false }, (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-
-    if (user) {
-      user.token = user.generateJWT();
-      user.save();
-      return res.json({ user: user.toAuthJSON() });
-
-    }
-
-    return status(400).info;
   })(req, res, next);
 });
 
@@ -73,7 +52,7 @@ router.get('/current', auth.required, (req, res, next) => {
 
   return User.findById(id)
     .then((user) => {
-      if (!user) {
+      if(!user) {
         return res.sendStatus(400);
       }
 

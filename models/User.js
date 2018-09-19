@@ -6,11 +6,19 @@ const { Schema } = mongoose;
 const { salt } = require('../config/config')
 
 const UserSchema = new Schema({
+  userId: String,
+  email: String,
   username: String,
   hash: String,
   token: String,
 });
 
+UserSchema.methods.setUserId = function(username) {
+  this.userId = crypto.randomBytes(20).toString('hex');;
+};
+UserSchema.methods.setEmail = function(email) {
+  this.email = email;
+};
 UserSchema.methods.setName = function(username) {
   this.username = username;
 };

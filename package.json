@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "build-watch": "parcel watch ./Front-end/src/index.js",
+    "start-watch": "nodemon server.js",
+    "dev": "concurrently --kill-others \"npm run start-watch\" \"npm run build-watch\"",
+    "build": "parcel build ./Front-end/index.html",
+    "start": "npm run build && node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +29,8 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.4"
+    "concurrently": "^4.0.1",
+    "nodemon": "^1.18.4",
+    "parcel-bundler": "^1.9.7"
   }
 }

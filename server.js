@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const path = require('path');
 const mongoose = require('mongoose');
 
 //Configure mongoose's promise to global promise
@@ -23,27 +24,26 @@ app.use(bodyParser.json());app.use(require('express-session')({
   resave: true,
   saveUninitialized: true
 }));
-
+app.use(express.static('dist'))
 
 //Configure Mongoose
 mongoose.connect('mongodb://localhost/mern');
 mongoose.set('debug', true);
 
-//Models &routes
-var User = require('./models/User');
-app.use('/user', require('./routes/user'));
-
 //passport
 var passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy;
+  app.use(passport.initialize());
 
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
+passport.use(new LocalStrategy({
+  usernameField: "email",
+  passwordField: "password",
+ },
+  function(email, password, done) {
+    User.findOne({ email: email }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect email.' });
       }
       if (!user.validatePassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
@@ -55,34 +55,22 @@ passport.use(new LocalStrategy(
 
         return done(null, user);
       })
-      return done(null, user );
     });
   }
 ));
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
 
-//token
-
-
-//crud
-
-
-// app.post('/login',
-//   passport.authenticate('local', {
-//     session: false
-//   }),
-//   function(req, res) {
-//     console.log(res.user)
-//     res.setHeader('Content-Type', 'application/json')
-//     res.send(JSON.stringify({ token: req.user.token}));
-//   });
-
-// app.get('/login', (req, res) => {
-//   User.findOne({ username: "MD" }, function (err, user) {
-//   })
-//   res.sendFile(__dirname + '/index.html')
-// })
-// app.get('/', (req, res) => {
-//   res.send('Hello World')
-// })
+//Models & routes
+var User = require('./models/User');
+app.use('/user', require('./routes/user'));
+// app.get('/', function(req, res) {
+//   res.sendFile(path.join(__dirname + '/dist/index.html'));
+// });
+app.get('*',function (req, res) {
+  console.log("asd")
+  res.redirect('/');
+});
 
 app.listen(1111, () => console.log('Server running on http://localhost:1111/'));
