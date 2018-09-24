@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-watch": "parcel watch ./Front-end/src/index.js",
-    "start-watch": "nodemon server.js",
+    "start-watch": "nodemon ./server/server.js",
     "dev": "concurrently --kill-others \"npm run start-watch\" \"npm run build-watch\"",
     "build": "parcel build ./Front-end/index.html",
-    "start": "npm run build && node server.js"
+    "start": "npm run build && node ./server/server.js"
   },
   "author": "",
   "license": "ISC",
