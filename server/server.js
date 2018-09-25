@@ -1,9 +1,6 @@
 const express = require('express');
-const crypto = require('crypto');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path');
 const mongoose = require('mongoose');
 
 //Configure mongoose's promise to global promise
@@ -63,8 +60,8 @@ passport.serializeUser(function(user, done) {
 });
 
 //Models & routes
-var User = require('../models/User');
-app.use('/user', require('../routes/user'));
+var User = require('./models/User');
+app.use('/user', require('./routes/user'));
 // app.get('/', function(req, res) {
 //   res.sendFile(path.join(__dirname + '/dist/index.html'));
 // });
