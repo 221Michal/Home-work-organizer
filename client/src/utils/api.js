@@ -16,7 +16,7 @@ export default function callApi(endpoint, method = 'get', body = null, props = n
             .catch(() => ({ json: {}, response })) // przypadek błędu parsowania body ==> json (np. puste body, źłe formatowanie jsona)
         )
         .then(({ json, response }) => {
-            if (response.status === 403 && json.message === 'Access Denied' && props && props.token && dispatch) dispatch(userLogout());
+            // if (response.status === 403 && json.message === 'Access Denied' && props && props.token && dispatch) dispatch(userLogout());
 
             // if (!response.ok) {
             //     const message = json && json.message ? json.message : 'Problem with api';

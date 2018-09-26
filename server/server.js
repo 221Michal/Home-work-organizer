@@ -61,7 +61,7 @@ passport.serializeUser(function(user, done) {
 
 //Models & routes
 var User = require('./models/User');
-app.use('/user', require('./routes/user'));
+app.use('/api/user', require('./routes/user'));
 // app.get('/', function(req, res) {
 //   res.sendFile(path.join(__dirname + '/dist/index.html'));
 // });

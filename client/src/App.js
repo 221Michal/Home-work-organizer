@@ -1,21 +1,29 @@
 import React, { Component } from 'react';
-import callApi from "../utils/api";
+import { connect } from 'react-redux';
+import { userLogin } from './utils/actions/User';
 import './App.css';
 
 class App extends Component {
-  start() {
+  componentDidMount() {
     console.log("asd")
-    callApi('user/login', 'post', { email: 'md@email.pl', password: 'asd' })
-
+    this.props.userLogin('md@email.pl', 'asd')
   }
   render() {
     return (
       <div className="App">
-      {this.start()}
-      witamy w react!!!
+        witamy w react!!!
       </div>
     );
   }
 }
 
-export default App;
+function mapStateToProps(store) {
+  console.log(store)
+  return {
+    user: store.User,
+  };
+}
+const mapDispatchToProps = {
+  userLogin,
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);
