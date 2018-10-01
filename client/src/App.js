@@ -1,29 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { userLogin } from './utils/actions/User';
-import './App.css';
+import { userLogin, userLogOut, userRegister } from './utils/actions/User';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+} from 'react-router-dom'
+import RegisterForm from './components/register/RegisterForm';
+import Home from './screens/home/Home';
+import startPage from './screens/startPage/startPage';
+import './App.scss';
 
 class App extends Component {
-  componentDidMount() {
-    console.log("asd")
-    this.props.userLogin('md@email.pl', 'asd')
-  }
   render() {
     return (
-      <div className="App">
-        witamy w react!!!
+      <div className="app">
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/login" component={startPage} />
+          </Switch>
+        </Router>
       </div>
     );
   }
 }
 
 function mapStateToProps(store) {
-  console.log(store)
   return {
     user: store.User,
   };
 }
 const mapDispatchToProps = {
   userLogin,
+  userLogOut,
+  userRegister,
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App);

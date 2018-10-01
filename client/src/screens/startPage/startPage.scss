@@ -1,0 +1,33 @@
+.start-page {
+    text-align: center;
+    background-image: url('../../img/home_page_bg.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    min-height: 1400px;
+    .start-form {
+        position: absolute;
+        top: 200px;
+        right: 500px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        .form {
+        display: flex;
+        flex-direction: column;
+        button {
+            width: 100px;
+            padding: 10px 0;
+            margin: 0 auto;
+        }
+        }
+        &.register {
+            top: 500px;
+        }
+    }
+    .register-form {
+
+        display: flex;
+        flex-direction: column;
+    }
+}

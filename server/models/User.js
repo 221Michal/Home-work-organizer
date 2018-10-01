@@ -10,11 +10,10 @@ const UserSchema = new Schema({
   email: String,
   username: String,
   hash: String,
-  token: String,
 });
 
 UserSchema.methods.setUserId = function(username) {
-  this.userId = crypto.randomBytes(20).toString('hex');;
+  this.userId = crypto.randomBytes(8).toString('hex');;
 };
 UserSchema.methods.setEmail = function(email) {
   this.email = email;
@@ -37,8 +36,8 @@ UserSchema.methods.generateJWT = function() {
   expirationDate.setDate(today.getDate() + 60);
   return jwt.sign({
     username: this.username,
-    id: this._id,
-    exp: parseInt(expirationDate.getTime() / 1000, 10),
+    userId: this.userId,
+    id: this._id
   }, 'secret');
 }
 
@@ -46,9 +45,8 @@ UserSchema.methods.toAuthJSON = function() {
   return {
     _id: this._id,
     username: this.username,
-    token: this.generateJWT(),
+    userId: this.userId,
   };
 };
 
-// mongoose.model('xyz', UserSchema);
 module.exports = mongoose.model('User', UserSchema);

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 //Configure mongoose's promise to global promise
 mongoose.promise = global.Promise;
@@ -21,7 +22,7 @@ app.use(bodyParser.json());app.use(require('express-session')({
   resave: true,
   saveUninitialized: true
 }));
-app.use(express.static('dist'))
+app.use(express.static(path.join(__dirname, '../client/build')))
 
 //Configure Mongoose
 mongoose.connect('mongodb://localhost/mern');
@@ -47,11 +48,7 @@ passport.use(new LocalStrategy({
       }
       const token = user.generateJWT()
       user.token = token
-      user.save((err) => {
-        if (err) done(err, user);
-
-        return done(null, user);
-      })
+      return done(null, user);
     });
   }
 ));
@@ -61,12 +58,11 @@ passport.serializeUser(function(user, done) {
 
 //Models & routes
 var User = require('./models/User');
-app.use('/api/user', require('./routes/user'));
+app.use('/api', require('./routes/api'));
 // app.get('/', function(req, res) {
 //   res.sendFile(path.join(__dirname + '/dist/index.html'));
 // });
 app.get('*',function (req, res) {
-  console.log("asd")
   res.redirect('/');
 });
 
