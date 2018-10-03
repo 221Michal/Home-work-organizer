@@ -6,15 +6,11 @@ const { Schema } = mongoose;
 const { salt } = require('../config/config')
 
 const UserSchema = new Schema({
-  userId: String,
   email: String,
   username: String,
   hash: String,
 });
 
-UserSchema.methods.setUserId = function(username) {
-  this.userId = crypto.randomBytes(8).toString('hex');;
-};
 UserSchema.methods.setEmail = function(email) {
   this.email = email;
 };
@@ -36,16 +32,14 @@ UserSchema.methods.generateJWT = function() {
   expirationDate.setDate(today.getDate() + 60);
   return jwt.sign({
     username: this.username,
-    userId: this.userId,
-    id: this._id
+    userId:  this._id,
   }, 'secret');
 }
 
 UserSchema.methods.toAuthJSON = function() {
   return {
-    _id: this._id,
+    userId:  this._id,
     username: this.username,
-    userId: this.userId,
   };
 };
 

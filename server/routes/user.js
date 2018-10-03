@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const passport = require('passport');
 const router = require('express').Router();
 const auth = require('./auth');
+const passport = require('passport');
 const User = mongoose.model('User');
 
 //POST new user route (optional, everyone has access)
@@ -33,7 +33,6 @@ router.post('/register', auth.optional, (req, res, next) => {
     else {
       const finalUser = new User();
       finalUser.setName(username);
-      finalUser.setUserId();
       finalUser.setEmail(email);
       finalUser.setPassword(password);
       finalUser.generateJWT()
@@ -58,10 +57,11 @@ router.post('/login', auth.optional, (req, res, next) => {
 
 //GET current route (required, only authenticated users have access) 5bae11a54df1243b79273121
 router.get('/current', auth.required, (req, res, next) => {
-  const { payload: { id } } = req;
+  const { payload: { userId } } = req;
   console.log(req.payload)
-  return User.findById(id)
+  return User.findById(userId)
     .then((user) => {
+      console.log(user)
       if (!user) {
         return res.sendStatus(400);
       }
