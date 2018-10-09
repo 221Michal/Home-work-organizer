@@ -1,0 +1,1 @@
+module.exports = { REQUEST_FOR_HOME: 'REQUEST_FOR_HOME' }

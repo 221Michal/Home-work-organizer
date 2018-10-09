@@ -6,18 +6,28 @@ const HomeShema = new Schema({
     users: Array,
 })
 
-HomeShema.methods.createHome = function(homeName, userId, username) {
+HomeShema.methods.createHome = function (homeName, userId, username) {
     this.homeName = homeName;
     this.users = [
         {
             leader: true,
-            homeName,
             userId,
             username,
         }
     ]
 };
-HomeShema.methods.getHomeInfo = function() {
+
+HomeShema.methods.addUser = function (userId, username) {
+    const newUsers = this.users;
+    newUsers.push({
+        leader: false,
+        userId,
+        username,
+    })
+    this.users = newUsers;
+}
+
+HomeShema.methods.getHomeInfo = function () {
     return {
         homeName: this.homeName,
         homeId: this._id,
