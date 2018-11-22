@@ -9,7 +9,7 @@ const UserSchema = new Schema({
   email: String,
   username: String,
   hash: String,
-  homeId: String,
+  home: Object,
 });
 
 UserSchema.methods.setEmail = function (email) {
@@ -37,15 +37,16 @@ UserSchema.methods.generateJWT = function () {
   }, 'secret');
 }
 
-UserSchema.methods.joinHome = function (homeId) {
-  this.homeId = homeId
+UserSchema.methods.joinHome = function (homeId, leader) {
+  this.home.homeId = homeId;
+  this.home.leader = leader
 }
 
 UserSchema.methods.toAuthJSON = function () {
   return {
     userId: this._id,
     username: this.username,
-    homeId: this.homeId,
+    home: this.homeId,
   };
 };
 

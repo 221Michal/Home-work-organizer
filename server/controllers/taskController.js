@@ -5,7 +5,7 @@ const { addUserToHome, rejectRequest } = homeControler
 
 const taskController= {};
 
-taskController.fetchAllTask = function (userId, res) {
+taskController.fetchAllTask = function (req, res) {
     const { payload: { userId } } = req
     Task.find({ id: userId, status: "WAITING" }, function (err, task) {
         res.json({ task })

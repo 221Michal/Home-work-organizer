@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const Home = mongoose.model('Home');
 const Task = mongoose.model('Task');
 const taskTypes = require('../utils/constans/TasksType')
 
@@ -11,7 +12,7 @@ homeController.createHome = function (req, res) {
     newHome.createHome(homeName, userId, username);
     const newHomeInfo = newHome.getHomeInfo()
     User.findOne({ _id: userId }, function (err, user) {
-        user.joinHome(newHomeInfo.homeId)
+        user.joinHome(newHomeInfo.homeId, true)
         user.save()
     })
     return newHome.save()
@@ -33,7 +34,7 @@ homeController.sendRequestToHome = function (req, res) {
 
 homeController.addUserToHome = function (userId, homeId, res) {
     User.findOne({_id: userId}, function (err, user) {
-        user.homeId = homeId;
+        user.joinHome(homeId, false)
         user.save();
        return res.json({message: "udało się dołączyć do grupy"})
     })
@@ -44,6 +45,16 @@ const sendRequest = function (homeId, user) {
     const request = new Task();
     request.taskAdd(user._id, REQUEST_FOR_HOME, { homeId })
     request.save();
+}
+
+homeController.homeInfo = function (req, res) {
+ Home.findById(req.params.homeId)
+ .then(home => {
+    if (!home) {
+        return res.sendStatus(400);
+      }
+      return res.json({ home: home.getHomeInfo() });
+ })
 }
 
 module.exports = homeController;
