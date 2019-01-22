@@ -15,6 +15,7 @@ router.post('/login', auth.optional, (req, res, next) => {
 
 //GET current route (required, only authenticated users have access) 5bae11a54df1243b79273121
 router.get('/current', auth.required, (req, res, next) => {
+  console.log("asd", Date())
   getUserInfo(req, res)
 });
 

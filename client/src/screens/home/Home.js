@@ -2,8 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { userLogOut, userInfo } from '../../utils/actions/User';
 import { getHomeInfo } from "../../utils/actions/Home";
+import { fetchAllUserTask } from "../../utils/actions/Task";
 import './Home.scss'
-import NewHomeForm from '../../components/newHomeForm/NewHomeForm';
+import NewHomeForm from '../../components/forms/NewHomeForm';
+import AddUserToForm from '../../components/forms/AddUserToForm';
+import Task from '../../components/task/Task';
 
 class Home extends React.Component {
     constructor(props, context) {
@@ -14,6 +17,7 @@ class Home extends React.Component {
     componentDidMount() {
         if (!this.props.user.auth) this.props.history.push('/login');
         else this.props.userInfo()
+        this.props.fetchAllUserTask()
     }
 
     logOut() {
@@ -53,14 +57,33 @@ class Home extends React.Component {
         return <div>{user.username}</div>
     }
 
+    renderTasks(tasks) {
+       return tasks.map(task => {
+           return <Task task={task} />
+        })
+        
+    }
+
     render() {
+        if (!this.props.user.userInfo.userId) return <div>logowanie</div>
         return (
             <div className='home-page'>
                 {this.props.user.auth && <button onClick={this.logOut}>wyloguj się</button>}
                 {
-                    this.props.user.userInfo.homeId ?
-                    this.renderHomeInfo(this.props.user.userInfo.homeId)
+                    this.props.user.userInfo.home.homeId ?
+                    this.renderHomeInfo(this.props.user.userInfo.home.homeId)
                     : <NewHomeForm /> 
+                }
+                {
+                    this.props.user.userInfo.home.leader &&
+                    <AddUserToForm />
+                }
+                {
+                    this.props.tasks.length > 0 &&
+                    <div>
+                        <h1>Twoje zadania</h1>
+                        {this.renderTasks(this.props.tasks)}
+                    </div>
                 }
             </div>
         );
@@ -70,14 +93,16 @@ class Home extends React.Component {
 function mapStateToProps(store) {
     return {
         user: store.User,
-        home: store.Home.homeInfo
+        home: store.Home.homeInfo,
+        tasks: store.Task.userTasks,
     };
 }
 
 const mapDispatchToProps = {
     userLogOut,
     userInfo,
-    getHomeInfo
+    getHomeInfo,
+    fetchAllUserTask
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

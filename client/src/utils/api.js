@@ -9,7 +9,6 @@ export default function callApi(endpoint, method = 'get', body = null, token = n
     };
     if (token !== null)
         opts.headers['authorization'] = token;
-
     if (body) opts.body = JSON.stringify(body);
     return fetch(`/api/${endpoint}`, opts) //${process.env.API_URL} na początku urla
         .then(response => response.json()

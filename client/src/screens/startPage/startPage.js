@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import LoginForm from '../../components/login/LoginForm';
-import RegisterForm from '../../components/register/RegisterForm';
+import LoginForm from '../../components/forms/LoginForm';
+import RegisterForm from '../../components/forms/RegisterForm';
 import './startPage.scss'
 
 class startPage extends React.Component {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { userLogin } from '../../utils/actions/User';
+import { sendRequestToHome } from '../../utils/actions/Home';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -27,13 +27,13 @@ const styles = theme => ({
     },
 });
 
-class NewHomeForm extends Component {
+class AddUserToForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            homeName: '',
+            userEmail: '',
         };
-        this.login = this.login.bind(this)
+        this.addUser = this.addUser.bind(this)
     }
 
     handleChange = name => event => {
@@ -42,29 +42,28 @@ class NewHomeForm extends Component {
         });
     };
 
-    login(e) {
+    addUser(e) {
         e.preventDefault()
-        const { email, password } = this.state
-        const goToUrl = () => this.props.history.push('/');
-        this.props.userLogin(email, password, goToUrl)
+        const { userEmail } = this.state
+        this.props.sendRequestToHome(userEmail, this.props.user.userInfo.home.homeId)
     }
 
     render() {
         const { classes } = this.props;
         return (
-            <form onSubmit={this.login}>
+            <form onSubmit={this.addUser}>
                 <div className="form">
                     <TextField
                         id="outlined-name"
-                        label="nazwa home"
+                        label="Email nowego członka"
                         className={this.props.classes.textField}
-                        value={this.state.homeName}
-                        onChange={this.handleChange('homeName')}
+                        value={this.state.userEmail}
+                        onChange={this.handleChange('userEmail')}
                         margin="normal"
                         variant="outlined"
                     />
                    
-                    <button onClick={this.login}>Załóż home</button>
+                    <button onClick={this.addUser}>Dodaj członka</button>
                 </div>
             </form>
         );
@@ -78,7 +77,7 @@ function mapStateToProps(store) {
 }
 
 const mapDispatchToProps = {
-    userLogin,
+    sendRequestToHome,
 }
 
-export default withRouter(withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(NewHomeForm)));
+export default withRouter(withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(AddUserToForm)));

@@ -9,7 +9,10 @@ const UserSchema = new Schema({
   email: String,
   username: String,
   hash: String,
-  home: Object,
+  home: {
+    homeId: String,
+    leader: String
+  },
 });
 
 UserSchema.methods.setEmail = function (email) {
@@ -46,7 +49,7 @@ UserSchema.methods.toAuthJSON = function () {
   return {
     userId: this._id,
     username: this.username,
-    home: this.homeId,
+    home: this.home,
   };
 };
 

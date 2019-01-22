@@ -23,7 +23,7 @@ homeController.sendRequestToHome = function (req, res) {
     const { body: { homeId } } = req;
     User.findOne({ email: req.params.email }, function (err, user) {
         if (user) {
-            if (!user.homeId, "id") {
+            if (!user.home.homeId) {
                 sendRequest(homeId, user)
                 res.json({ message: 'Wysłałeś zaproszenie do swojego home' })
             }
